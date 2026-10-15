@@ -175,6 +175,16 @@ class TestFormat:
                 == "SELECT some_column LIKE 'value\\\\\\'\r' WHERE id = 1\n")
 
 
+@pytest.mark.parametrize('quote', ["'", '"'])
+@pytest.mark.parametrize('newline', ['\n', '\r', '\r\n'])
+@pytest.mark.parametrize('options', [{}, {'strip_whitespace': True},
+                                    {'reindent': True}])
+def test_preserve_quoted_newlines_after_backslash(quote, newline, options):
+    text = 'SELECT ' + quote + 'a\\' + newline + 'b  \r\nc' + quote + ';'
+
+    assert sqlparse.format(text, **options) == text
+
+
 class TestFormatReindentAligned:
     @staticmethod
     def formatter(sql):
